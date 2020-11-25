@@ -1,5 +1,6 @@
 <template>
   <a-modal
+    v-if="modalData.record !== undefined"
     :title="modalData.title"
     :width="600"
     :visible="modalData.visible"
@@ -23,13 +24,17 @@
         <a-form-item label="责任人" :label-col="labelCol" :wrapper-col="wrapperCol" v-show="true">
           <a-tree-select
             :disabled="modalData.disabled"
-            v-decorator="['manager', {}]"
+            :labelInValue="true"
+            v-model="managerObj"
             style="width: 100%"
             :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
             :tree-data="personTreeData"
             placeholder
             tree-default-expand-all
+            @change="(obj) => this.form.setFieldsValue({manager: obj.value, managerName: obj.label})"
           ></a-tree-select>
+          <a-input :disabled="modalData.disabled"  v-decorator="['manager', {}]" v-show="false"/>
+          <a-input :disabled="modalData.disabled"  v-decorator="['managerName', {}]" v-show="false"/>
         </a-form-item>
         <a-form-item label="经度" :label-col="{ span: 3 }" :wrapper-col="{ span: 21 }" style="width: 606px;">
           <a-input :disabled="modalData.disabled" v-decorator="['lng', {}]" style="width: 110px" />
@@ -121,7 +126,8 @@ export default {
       formLayout: 'inline',
       confirmLoading: false,
       treeData: [],
-      personTreeData: []
+      personTreeData: [],
+      managerObj: {}
     }
   },
   watch: {
@@ -130,6 +136,10 @@ export default {
       if (modalData.visible === true) {
         this.$nextTick(() => {
           delete this.modalData.record.delTag
+          this.managerObj = {
+            value: this.modalData.record.manager,
+            label: this.modalData.record.managerName
+          }
           this.form.setFieldsValue({ ...this.modalData.record })
         })
       }

@@ -1,48 +1,44 @@
 <template>
   <div>
     <div id="container"></div>
-    <a-modal
-      title="河流信息"
-      :width="800"
-      :visible="visible"
-      :maskClosable="false"
-      @cancel="handleCancel"
-    >
+    <a-modal title="河流信息" :width="800" :visible="visible" :maskClosable="false" @cancel="handleCancel">
       <template slot="footer">
         <a-button @click="handleCancel" type="primary"> 关闭 </a-button>
       </template>
+      <div id="container2" style="width: 100%; height: 300px"></div>
     </a-modal>
   </div>
 </template>
 
 <script>
-import {riverList} from '@/api/river'
+import echarts from 'echarts'
+import { riverList } from '@/api/river'
+import { waterList2 } from '@/api/water'
+import qs from 'qs'
 export default {
   data() {
     return {
-      visible: false
+      visible: false,
+      waterListData: [],
     }
   },
   mounted() {
-    
-    this.initMap();
+    this.initMap()
   },
   methods: {
-    handleCancel() {
-      this.visible = false
-    },
     riverList() {
-      riverList().then(res => {
-        var data = []
-        res.result.data.forEach(river => {
-          data.push(river.lng + ',' + river.lat + ',' + river.riverName)
-        });
-        window.pointSimplifierIns.setData(data)
-        $('#loadingTip').remove()
-      }).catch(err => {
-
-      })
+      riverList()
+        .then((res) => {
+          // var data = []
+          // res.result.data.forEach((river) => {
+          //   data.push(river.lng + ',' + river.lat + ',' + river.riverName + '（' + river.managerName + '）')
+          // })
+          window.pointSimplifierIns.setData(res.result.data)
+          // $('#loadingTip').remove()
+        })
+        .catch((err) => {})
     },
+    
     initMap() {
       //创建地图
       var map = new AMap.Map('container', {
@@ -60,17 +56,14 @@ export default {
           map: map,
           //maxChildrenOfQuadNode:3,
           getPosition: function (item) {
+            
             if (!item) {
               return null
             }
-
-            var parts = item.split(',')
-
-            return [parseFloat(parts[0]), parseFloat(parts[1])]
+            return [item.lng, item.lat]
           },
           getHoverTitle: function (dataItem, idx) {
-            
-            return dataItem.split(',')[2]
+            return dataItem.riverName + '（责任人：'+dataItem.managerName + '）'
           },
           renderOptions: {
             //点的样式
@@ -88,7 +81,7 @@ export default {
               //宽度
               width: 30,
               //高度
-              height: 31,
+              height: 30,
               //定位点为底部中心
               offset: ['-50%', '-100%'],
               fillStyle: null,
@@ -99,14 +92,17 @@ export default {
 
         window.pointSimplifierIns = pointSimplifierIns
 
-        $('<div id="loadingTip">加载数据，请稍候...</div>').appendTo(document.body)
+        // $('<div id="loadingTip">加载数据，请稍候...</div>').appendTo(document.body)
         that.riverList()
-         //监听事件
+        //监听事件
         // pointSimplifierIns.on('pointClick pointMouseover pointMouseout', function(e, record) {
-        pointSimplifierIns.on('pointClick', function(e, record) {
+        pointSimplifierIns.on('pointClick', function (e, record) {
           that.visible = true
-          console.log(e.type, record);
-        });
+          that.waterList2(record)
+          
+
+          //console.log(e.type, record)
+        })
         // $.get('https://a.amap.com/amap-ui/static/data/10w.txt', function (csv) {
         //   var data = csv.split('\n')
         //   pointSimplifierIns.setData(data)
@@ -114,27 +110,87 @@ export default {
         // })
       })
     },
+    waterList2(record) {
+      var param = {
+        riverId: record.data.id
+      }
+      waterList2( qs.stringify(param) ).then(res => {
+        this.waterListData = res.result.data
+        this.initEcharts(record)
+      }).catch(err => {
+
+      })
+    },
+    initEcharts(record) {
+
+      
+      var that = this
+      var river = record.data
+      this.$nextTick(() => {
+        var legends = []
+        var series = []
+        that.waterListData.forEach(section => {
+          legends.push(section.sectionName)
+          series.push({
+            name: section.sectionName,
+            color: 'green',
+            data: section.type.split(','),
+            type: 'line',
+            smooth: true,
+          })
+        });
+        var dom = document.getElementById('container2')
+        var myChart = echarts.init(dom)
+        var app = {}
+        var option = {
+          title: {
+            text: river.riverName + '-水质折线图',
+          },
+          tooltip: {
+            trigger: 'axis',
+          },
+          legend: {
+            data: legends,
+          },
+          xAxis: {
+            type: 'category',
+            data: ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'],
+          },
+          yAxis: {
+            type: 'category',
+            data: ['V','IV','III','II','I']
+          },
+          series: series,
+        }
+        if (option && typeof option === 'object') {
+          myChart.setOption(option, true)
+        }
+      })
+    },
+    handleCancel() {
+      this.visible = false
+    },
   },
 }
 </script>
 
 <style>
- html,
-    body,
-    #container {
-        width: 100%;
-        height: calc(100vh - 100px);
-        margin: 0px;
-    }
-    
-    #loadingTip {
-        position: absolute;
-        z-index: 9999;
-        top: 0;
-        right: 0;
-        padding: 3px 10px;
-        background: red;
-        color: #fff;
-        font-size: 13px;
-    }
+html,
+body,
+#container {
+  width: 100%;
+  height: calc(100vh - 100px);
+  margin: 0px;
+}
+
+#loadingTip {
+  position: absolute;
+  z-index: 9999;
+  top: 0;
+  right: 0;
+  padding: 3px 10px;
+  background: red;
+  color: #fff;
+  font-size: 13px;
+}
 </style>

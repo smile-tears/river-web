@@ -69,11 +69,21 @@ const columns = [
     dataIndex: 'riverName',
     key: 'riverName',
   },
-  // {
-  //   title: '责任人',
-  //   dataIndex: 'manager',
-  //   key: 'manager',
-  // },
+  {
+    title: '责任人',
+    dataIndex: 'managerName',
+    key: 'managerName',
+  },
+  {
+    title: '经度',
+    dataIndex: 'lng',
+    key: 'lng',
+  },
+  {
+    title: '纬度',
+    dataIndex: 'lat',
+    key: 'lat',
+  },
   {
     title: '显示顺序',
     dataIndex: 'showOrder',

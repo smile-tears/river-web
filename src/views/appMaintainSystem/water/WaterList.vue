@@ -14,16 +14,6 @@
             </a-form-item>
           </a-col>
           <a-col :md="8" :sm="8">
-            <a-form-item label="水质类别">
-              <a-input v-model="queryParam.type" placeholder="" />
-            </a-form-item>
-          </a-col>
-          <a-col :md="8" :sm="8">
-            <a-form-item label="主要污染因子">
-              <a-input v-model="queryParam.wryz" placeholder="" />
-            </a-form-item>
-          </a-col>
-          <a-col :md="8" :sm="8">
             <a-button type="primary" icon="search" @click="loadData">查询</a-button>
             <a-button style="margin-left: 8px" @click="() => (queryParam = {})">重置</a-button>
           </a-col>
@@ -73,6 +63,16 @@ const columns = [
   {
     title: '序号',
     scopedSlots: { customRender: 'serial' },
+  },
+  {
+    title: '河道',
+    dataIndex: 'riverName',
+    key: 'riverName',
+  },
+  {
+    title: '断面',
+    dataIndex: 'sectionName',
+    key: 'sectionName',
   },
   {
     title: '溶解氧',
@@ -125,15 +125,9 @@ export default {
   components: {
     WaterEdit,
   },
-  mounted() {
-    this.loadData()
-  },
   created() {
-    this.eventBus.$on('transferWaterNode', (waterNode) => {
-      // 接收事件
-      this.waterNode = waterNode
-      this.loadData()
-    })
+    this.loadData()
+    
   },
   data() {
     return {
@@ -148,6 +142,7 @@ export default {
       waterNode: {},
       modalData: {},
       queryParam: {},
+      
     }
   },
   methods: {

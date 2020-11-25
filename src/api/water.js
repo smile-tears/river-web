@@ -2,6 +2,7 @@ import { axios } from '@/utils/request'
 
 const api = {
   waterList: '/water/find',
+  waterList2: '/water/find2',
   waterPost: '/water/post',
   waterDelete: '/water/delete',
   waterPut: '/water/put'
@@ -12,6 +13,14 @@ export default api
 export function waterList(parameter) {
   return axios({
     url: api.waterList,
+    method: 'post',
+    data: parameter
+  })
+}
+
+export function waterList2(parameter) {
+  return axios({
+    url: api.waterList2,
     method: 'post',
     data: parameter
   })
