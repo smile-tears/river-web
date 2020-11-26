@@ -18,7 +18,7 @@ export default {
   props: {
     title: {
       type: String,
-      default: '堰桥智慧安监平台',
+      default: '堰桥河道水质监测平台',
       required: false
     },
     showTitle: {

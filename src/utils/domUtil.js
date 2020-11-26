@@ -16,4 +16,4 @@ export const setDocumentTitle = function (title) {
   }
 }
 
-export const domTitle = '堰桥智慧安监平台'
+export const domTitle = '堰桥河道水质监测平台'
