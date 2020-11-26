@@ -1,12 +1,139 @@
 <template>
   <div>
-    <div id="container"></div>
-    <a-modal title="河流信息" :width="800" :visible="visible" :maskClosable="false" @cancel="handleCancel">
-      <template slot="footer">
-        <a-button @click="handleCancel" type="primary"> 关闭 </a-button>
-      </template>
-      <div id="container2" style="width: 100%; height: 300px"></div>
-    </a-modal>
+    <div style="wdith: 100vw;">
+      <div id="container"></div>
+      <div id="right-container">
+        <table>
+          <tr>
+            <td colspan="3" style="text-align: center;font-size: 16px;">水位</td>
+          </tr>
+          <tr>
+            <td rowspan="2" style="width: 40%;">三闸站</td>
+            <td style="width: 40%;">外河水位：</td>
+            <td style="width: 20%;">3.79m</td>
+          </tr>
+          <tr>
+            <td>内河水位</td>
+            <td>2.28m</td>
+          </tr>
+
+          <tr>
+            <td rowspan="2">菖蒲泾站</td>
+            <td>外河水位：</td>
+            <td>4.39m</td>
+          </tr>
+          <tr>
+            <td>内河水位</td>
+            <td>1.70m</td>
+          </tr>
+
+          <tr>
+            <td>西旺泾站</td>
+            <td>内河水位：</td>
+            <td>1.00m</td>
+          </tr>
+
+          <tr>
+            <td>界泾河站</td>
+            <td>内河水位：</td>
+            <td>0.43m</td>
+          </tr>
+
+           <tr>
+            <td>章基站</td>
+            <td>内河水位：</td>
+            <td>1.76m</td>
+          </tr>
+          <tr>
+            <td>热电厂站</td>
+            <td>内河水位：</td>
+            <td>2.08m</td>
+          </tr>
+
+          <tr>
+            <td>太平港南闸</td>
+            <td>内河水位：</td>
+            <td>3.56m</td>
+          </tr>
+
+          <tr>
+            <td>唐巷站</td>
+            <td>内河水位：</td>
+            <td>3.62m</td>
+          </tr>
+
+          <tr>
+            <td>蒋巷站</td>
+            <td>内河水位：</td>
+            <td>3.57m</td>
+          </tr>
+
+          <tr>
+            <td>东庄站</td>
+            <td>内河水位：</td>
+            <td>3.58m</td>
+          </tr>
+
+          <tr>
+            <td>姑里船厂站</td>
+            <td>内河水位：</td>
+            <td>3.78m</td>
+          </tr>
+
+          <tr>
+            <td>隔水站</td>
+            <td>内河水位：</td>
+            <td>3.01m</td>
+          </tr>
+
+          <tr>
+            <td rowspan="2">新开河站</td>
+            <td>外河水位：</td>
+            <td>0.00m</td>
+          </tr>
+          <tr>
+            <td>内河水位</td>
+            <td>0.00m</td>
+          </tr>
+
+          <tr>
+            <td>西漳北闸</td>
+            <td>内河水位：</td>
+            <td>0.00m</td>
+          </tr>
+
+          <tr>
+            <td>西漳南闸</td>
+            <td>内河水位：</td>
+            <td>0.00m</td>
+          </tr>
+
+          <tr>
+            <td>黄金岸站</td>
+            <td>内河水位：</td>
+            <td>0.00m</td>
+          </tr>
+
+          <tr>
+            <td>西站</td>
+            <td>内河水位：</td>
+            <td>0.00m</td>
+          </tr>
+
+          <tr>
+            <td>塘头站</td>
+            <td>内河水位：</td>
+            <td>3.76m</td>
+          </tr>
+        </table>
+      </div>
+      <a-modal title="河流信息" :width="800" :visible="visible" :maskClosable="false" @cancel="handleCancel">
+        <template slot="footer">
+          <a-button @click="handleCancel" type="primary"> 关闭 </a-button>
+        </template>
+        <div id="container2" style="width: 100%; height: 300px"></div>
+      </a-modal>
+    </div>
   </div>
 </template>
 
@@ -174,12 +301,28 @@ export default {
 }
 </script>
 
-<style>
-html,
-body,
+<style lang="less" scoped>
+table tr {
+  height: 28px;
+  font-weight: bold;
+}
+table td {
+  font-size: 12px;
+}
 #container {
-  width: 100%;
+  float: left;
+  width: calc(100vw - 300px);
   height: calc(100vh - 100px);
+  margin: 0px;
+
+  // border: 1px solid #d3d3d3;
+  
+}
+#right-container {
+  padding: 16px;
+  float: left;
+  width: 200px;
+  /* height: calc(100vh - 100px); */
   margin: 0px;
 }
 
