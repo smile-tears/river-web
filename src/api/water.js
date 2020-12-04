@@ -5,7 +5,8 @@ const api = {
   waterList2: '/water/find2',
   waterPost: '/water/post',
   waterDelete: '/water/delete',
-  waterPut: '/water/put'
+  waterPut: '/water/put',
+  waterReport: '/water/report',
 }
 
 export default api
@@ -49,3 +50,12 @@ export function waterPut(parameter) {
     data: parameter
   })
 }
+
+export function waterReport(parameter) {
+  return axios({
+    url: api.waterReport,
+    method: 'post',
+    data: parameter
+  })
+}
+

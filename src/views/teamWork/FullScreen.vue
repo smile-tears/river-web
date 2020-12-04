@@ -261,7 +261,7 @@ export default {
           series.push({
             name: section.sectionName,
             color: 'green',
-            data: section.type.split(','),
+            data: section.typeList,
             type: 'line',
             smooth: true,
           })

@@ -28,11 +28,14 @@ const err = (error) => {
         description: 'Authorization verification failed'
       })
       if (token) {
-        store.dispatch('Logout').then(() => {
-          setTimeout(() => {
-            window.location.reload()
-          }, 1500)
-        })
+        window.sessionStorage.setItem(ACCESS_TOKEN,'')
+        //window.location.reload()
+        this.$router.push('/user/login')
+        // store.dispatch('Logout').then(() => {
+        //   setTimeout(() => {
+        //     window.location.reload()
+        //   }, 1500)
+        // })
       }
     }
   }
