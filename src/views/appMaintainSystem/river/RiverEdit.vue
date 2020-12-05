@@ -36,6 +36,18 @@
           <a-input :disabled="modalData.disabled"  v-decorator="['manager', {}]" v-show="false"/>
           <a-input :disabled="modalData.disabled"  v-decorator="['managerName', {}]" v-show="false"/>
         </a-form-item>
+        <a-form-item label="类型" :label-col="labelCol" :wrapper-col="wrapperCol" v-show="true">
+          <a-select
+            :disabled="modalData.disabled"
+            placeholder=""
+            v-decorator="['riverType', {}]" 
+            @change="handleRiverChange"
+          >
+            <a-select-option :value="0" >闸站</a-select-option>
+            <a-select-option :value="1" >河道</a-select-option>
+          </a-select>
+        </a-form-item>
+
         <a-form-item label="经度" :label-col="{ span: 3 }" :wrapper-col="{ span: 21 }" style="width: 606px;">
           <a-input :disabled="modalData.disabled" v-decorator="['lng', {}]" style="width: 110px" />
           <span style="margin-left: 10px">纬度：</span>

@@ -43,6 +43,10 @@
       <span slot="serial" slot-scope="text, record, index">
         {{ index + 1 }}
       </span>
+      <span slot="riverType" slot-scope="text, record, index">
+        <span v-if="record.riverType === 0"> 闸站</span>
+        <span v-else-if="record.riverType === 1"> 河道</span>
+      </span>
       <template slot="action" slot-scope="text, record">
         <a @click="info(record)">查看</a>
         <a-divider type="vertical" />
@@ -73,6 +77,12 @@ const columns = [
     title: '责任人',
     dataIndex: 'managerName',
     key: 'managerName',
+  },
+  {
+    title: '类型',
+    dataIndex: 'riverType',
+    key: 'riverType',
+    scopedSlots: { customRender: 'riverType' },
   },
   {
     title: '经度',

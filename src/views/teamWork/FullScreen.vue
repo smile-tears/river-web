@@ -190,7 +190,17 @@ export default {
             return [item.lng, item.lat]
           },
           getHoverTitle: function (dataItem, idx) {
-            return dataItem.riverName + '（责任人：'+dataItem.managerName + '）'
+            if(dataItem.riverType === 0) {
+              return dataItem.riverName + '<br>责任人：' + dataItem.managerName + '<br>'+ '水位：1.35mm'
+            } else if (dataItem.riverType === 1) {
+              var text = dataItem.riverName + '<br>责任人：' + dataItem.managerName + '<br>断面：'
+              dataItem.sections.forEach(section => {
+                text += section.sectionName + '，'
+              })
+              return text;
+            }
+            
+            //return '<div style="background: red;">123</div>'
           },
           renderOptions: {
             //点的样式
@@ -224,6 +234,7 @@ export default {
         //监听事件
         // pointSimplifierIns.on('pointClick pointMouseover pointMouseout', function(e, record) {
         pointSimplifierIns.on('pointClick', function (e, record) {
+          if (record.data.riverType !== 1) return
           that.visible = true
           that.waterList2(record)
           
@@ -256,14 +267,16 @@ export default {
       this.$nextTick(() => {
         var legends = []
         var series = []
-        that.waterListData.forEach(section => {
+        var color = ['#80e673','#ccb33c', '#ec6c6c','#44a4dc','#6244dc']
+        that.waterListData.forEach((section,index) => {
           legends.push(section.sectionName)
+          
           series.push({
             name: section.sectionName,
-            color: 'green',
+            color: color[index],
             data: section.typeList,
             type: 'line',
-            smooth: true,
+            //smooth: true,
           })
         });
         var dom = document.getElementById('container2')
@@ -274,18 +287,24 @@ export default {
             text: river.riverName + '-水质折线图',
           },
           tooltip: {
-            trigger: 'axis',
+            trigger: 'item',
+            formatter: "{a} <br/>{b}水质: {c}"
           },
           legend: {
             data: legends,
           },
           xAxis: {
             type: 'category',
+            boundaryGap: false,
             data: ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'],
           },
           yAxis: {
             type: 'category',
-            data: ['V','IV','III','II','I']
+            boundaryGap: false,
+            data: ['V','IV','III','II','I'],
+            // axisLabel: {
+            //   formatter: '{value} °C'
+            // }
           },
           series: series,
         }
