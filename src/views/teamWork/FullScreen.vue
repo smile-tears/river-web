@@ -132,6 +132,46 @@
           <a-button @click="handleCancel" type="primary"> 关闭 </a-button>
         </template>
         <div id="container2" style="width: 100%; height: 300px"></div>
+        <div class="tbl-container">
+          <table class="tbl" style="width: 100%;">
+            <colgroup>
+              <col width="10%" />
+              <col width="15%" />
+              <col width="15%" />
+              <col width="15%" />
+              <col width="15%" />
+              <col width="15%" />
+              <col width="15%" />
+            </colgroup>
+            <tr>
+              <th colspan="7">
+                <a-select style="width: 86px;margin: 0 3px;" v-model="month" @change="() => this.waterList()">
+                  <a-select-option key="0">请选择</a-select-option>
+                  <a-select-option v-for="i in 12" :key="i">{{ i }}</a-select-option>
+                </a-select>
+                <span>月监测结果（单位：mg/L)</span>
+              </th>
+            </tr>
+            <tr>
+              <th>月份</th>
+              <th>断面</th>
+              <th>溶解氧</th>
+              <th>氨氮</th>
+              <th>总磷</th>
+              <th>高锰酸盐指数</th>
+              <th>主要污染因子</th>
+            </tr>
+            <tr v-for="(water,index) of waterListData" :key="index">
+              <td>{{water.month}}</td>
+              <td>{{water.sectionName}}</td>
+              <td>{{water.rjy}}</td>
+              <td>{{water.ad}}</td>
+              <td>{{water.zl}}</td>
+              <td>{{water.gmsj}}</td>
+              <td>{{water.wryz}}</td>
+            </tr>
+          </table>
+        </div>
       </a-modal>
     </div>
   </div>
@@ -140,13 +180,16 @@
 <script>
 import echarts from 'echarts'
 import { riverList } from '@/api/river'
-import { waterList2 } from '@/api/water'
+import { waterList2, waterList } from '@/api/water'
 import qs from 'qs'
 export default {
   data() {
     return {
       visible: false,
       waterListData: [],
+      waterListData2: [],
+      month: '0',
+      record: {}
     }
   },
   mounted() {
@@ -190,10 +233,12 @@ export default {
             return [item.lng, item.lat]
           },
           getHoverTitle: function (dataItem, idx) {
+            var managerName = dataItem.managerName
+            managerName = managerName == null ? '' : managerName
             if(dataItem.riverType === 0) {
-              return dataItem.riverName + '<br>责任人：' + dataItem.managerName + '<br>'+ '水位：1.35mm'
-            } else if (dataItem.riverType === 1) {
-              var text = dataItem.riverName + '<br>责任人：' + dataItem.managerName + '<br>断面：'
+              return dataItem.riverName + '<br>责任人：' + managerName + '<br>'+ '水位：1.35mm'
+            } else {
+              var text = dataItem.riverName + '<br>责任人：' + managerName + '<br>断面：'
               dataItem.sections.forEach(section => {
                 text += section.sectionName + '，'
               })
@@ -235,8 +280,10 @@ export default {
         // pointSimplifierIns.on('pointClick pointMouseover pointMouseout', function(e, record) {
         pointSimplifierIns.on('pointClick', function (e, record) {
           if (record.data.riverType !== 1) return
+          that.record = record
           that.visible = true
           that.waterList2(record)
+          that.waterList()
           
 
           //console.log(e.type, record)
@@ -250,11 +297,24 @@ export default {
     },
     waterList2(record) {
       var param = {
-        riverId: record.data.id
+        riverId: record.data.id,
+        year: new Date().getFullYear()
       }
       waterList2( qs.stringify(param) ).then(res => {
-        this.waterListData = res.result.data
+        this.waterListData2 = res.result.data
         this.initEcharts(record)
+      }).catch(err => {
+
+      })
+    },
+    waterList() {
+      var param = {
+        month: this.month,
+        riverId: this.record.data.id,
+        year: new Date().getFullYear()
+      }
+      waterList( qs.stringify(param) ).then(res => {
+        this.waterListData = res.result.data
       }).catch(err => {
 
       })
@@ -268,7 +328,7 @@ export default {
         var legends = []
         var series = []
         var color = ['#80e673','#ccb33c', '#ec6c6c','#44a4dc','#6244dc']
-        that.waterListData.forEach((section,index) => {
+        that.waterListData2.forEach((section,index) => {
           legends.push(section.sectionName)
           
           series.push({
@@ -327,6 +387,19 @@ table tr {
 }
 table td {
   font-size: 12px;
+}
+table tr {
+  height: 28px;
+}
+.tbl {
+  border-bottom: 1px solid gray;
+  border-right: 1px solid gray;
+}
+.tbl th ,.tbl td {
+  font-size: 12px;
+  text-align: center;
+  border-top: 1px solid gray;
+  border-left: 1px solid gray;
 }
 #container {
   float: left;
