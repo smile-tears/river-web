@@ -145,7 +145,7 @@
             </colgroup>
             <tr>
               <th colspan="7">
-                <a-select style="width: 86px;margin: 0 3px;" v-model="month" @change="() => this.waterList()">
+                <a-select size="small" style="width: 86px;margin: 0 3px;font-size: 12px;" v-model="month" @change="() => this.waterList()">
                   <a-select-option key="0">请选择</a-select-option>
                   <a-select-option v-for="i in 12" :key="i">{{ i }}</a-select-option>
                 </a-select>

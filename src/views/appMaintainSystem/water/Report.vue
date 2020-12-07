@@ -2,18 +2,19 @@
   <div>
     <h3 style="text-align: center">
       <span>堰桥街道镇级河道</span>
-      <a-select style="width: 80px;margin: 0 3px;" v-model="year" @change="() => this.waterReport()">
+      <a-select style="width: 80px;margin: 0 3px;" size="small" v-model="year" @change="() => this.waterReport()">
         <a-select-option v-for="i in yearArr" :key="i">
           {{ i }}
         </a-select-option>
       </a-select>
       <span>年</span>
-      <a-select style="width: 60px;margin: 0 3px;" v-model="month" @change="() => this.waterReport()">
+      <a-select style="width: 60px;margin: 0 3px;" size="small" v-model="month" @change="() => this.waterReport()">
         <a-select-option v-for="i in 12" :key="i">
           {{ i }}
         </a-select-option>
       </a-select>
       <span>月水质情况</span>
+      <a-button type="primary" size="small" style="margin-left: 10px;font-size: 12px;" @click="download">导出EXCEL</a-button>
     </h3>
     <table class="tbl" cellpadding="0" cellspacing="0">
       <colgroup>
@@ -164,6 +165,9 @@ export default {
         })
         .catch((err) => {})
     },
+    download() {
+      window.open('/water/download?year=' + this.year + '&month=' + this.month)
+    }
   },
 }
 </script>
