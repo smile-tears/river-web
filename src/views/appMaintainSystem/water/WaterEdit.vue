@@ -78,11 +78,12 @@
             placeholder=""
             v-decorator="['type', {}]" 
           >
-            <a-select-option value="1" >I</a-select-option>
-            <a-select-option value="2" >II</a-select-option>
-            <a-select-option value="3" >III</a-select-option>
-            <a-select-option value="4" >IV</a-select-option>
-            <a-select-option value="5" >V</a-select-option>
+            <a-select-option value="1" >Ⅰ</a-select-option>
+            <a-select-option value="2" >Ⅱ</a-select-option>
+            <a-select-option value="3" >Ⅲ</a-select-option>
+            <a-select-option value="4" >Ⅳ</a-select-option>
+            <a-select-option value="5" >Ⅴ</a-select-option>
+            <a-select-option value="6" >劣Ⅴ</a-select-option>
           </a-select>
         </a-form-item>
         <a-form-item label="主要污染因子" :label-col="labelCol" :wrapper-col="wrapperCol" v-show="true">

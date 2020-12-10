@@ -1,19 +1,19 @@
 <template>
   <div>
-    <div style="wdith: 100vw;">
+    <div style="wdith: 100vw">
       <div id="container"></div>
       <div id="right-container">
         <table>
           <tr>
-            <td colspan="3" style="text-align: center;font-size: 16px;">水位</td>
+            <td colspan="3" style="text-align: center; font-size: 16px">水位</td>
           </tr>
           <tr>
-            <td rowspan="2" style="width: 40%;">三闸站</td>
-            <td style="width: 40%;">外河水位：</td>
-            <td style="width: 20%;">3.79m</td>
+            <td rowspan="2" style="width: 40%">三闸站</td>
+            <td style="width: 40%">外河水位：</td>
+            <td style="width: 20%">3.79m</td>
           </tr>
           <tr>
-            <td>内河水位</td>
+            <td>内河水位：</td>
             <td>2.28m</td>
           </tr>
 
@@ -23,7 +23,7 @@
             <td>4.39m</td>
           </tr>
           <tr>
-            <td>内河水位</td>
+            <td>内河水位：</td>
             <td>1.70m</td>
           </tr>
 
@@ -39,7 +39,7 @@
             <td>0.43m</td>
           </tr>
 
-           <tr>
+          <tr>
             <td>章基站</td>
             <td>内河水位：</td>
             <td>1.76m</td>
@@ -133,7 +133,7 @@
         </template>
         <div id="container2" style="width: 100%; height: 300px"></div>
         <div class="tbl-container">
-          <table class="tbl" style="width: 100%;">
+          <table class="tbl" style="width: 100%">
             <colgroup>
               <col width="10%" />
               <col width="15%" />
@@ -145,7 +145,12 @@
             </colgroup>
             <tr>
               <th colspan="7">
-                <a-select size="small" style="width: 86px;margin: 0 3px;font-size: 12px;" v-model="month" @change="() => this.waterList()">
+                <a-select
+                  size="small"
+                  style="width: 86px; margin: 0 3px; font-size: 12px"
+                  v-model="month"
+                  @change="() => this.waterList()"
+                >
                   <a-select-option key="0">请选择</a-select-option>
                   <a-select-option v-for="i in 12" :key="i">{{ i }}</a-select-option>
                 </a-select>
@@ -161,14 +166,14 @@
               <th>高锰酸盐指数</th>
               <th>主要污染因子</th>
             </tr>
-            <tr v-for="(water,index) of waterListData" :key="index">
-              <td>{{water.month}}</td>
-              <td>{{water.sectionName}}</td>
-              <td>{{water.rjy}}</td>
-              <td>{{water.ad}}</td>
-              <td>{{water.zl}}</td>
-              <td>{{water.gmsj}}</td>
-              <td>{{water.wryz}}</td>
+            <tr v-for="(water, index) of waterListData" :key="index">
+              <td>{{ water.month }}</td>
+              <td>{{ water.sectionName }}</td>
+              <td>{{ water.rjy }}</td>
+              <td>{{ water.ad }}</td>
+              <td>{{ water.zl }}</td>
+              <td>{{ water.gmsj }}</td>
+              <td>{{ water.wryz }}</td>
             </tr>
           </table>
         </div>
@@ -189,7 +194,7 @@ export default {
       waterListData: [],
       waterListData2: [],
       month: '0',
-      record: {}
+      record: {},
     }
   },
   mounted() {
@@ -208,7 +213,7 @@ export default {
         })
         .catch((err) => {})
     },
-    
+
     initMap() {
       //创建地图
       var map = new AMap.Map('container', {
@@ -221,12 +226,42 @@ export default {
           return
         }
 
+        var groupStyleMap = {
+          0: {
+            pointStyle: {
+              //绘制点占据的矩形区域
+              content: PointSimplifier.Render.Canvas.getImageContent('/img/river2.png', onIconLoad, onIconError),
+              //宽度
+              width: 30,
+              //高度
+              height: 30,
+              //定位点为中心
+              offset: ['-50%', '-50%'],
+              fillStyle: null,
+              //strokeStyle: null
+            },
+          },
+          1: {
+            pointStyle: {
+              //绘制点占据的矩形区域
+              content: PointSimplifier.Render.Canvas.getImageContent('/img/river.png', onIconLoad, onIconError),
+              //宽度
+              width: 30,
+              //高度
+              height: 30,
+              //定位点为中心
+              offset: ['-50%', '-50%'],
+              fillStyle: null,
+              // strokeStyle: null
+            },
+          },
+        }
+
         var pointSimplifierIns = new PointSimplifier({
           zIndex: 300,
           map: map,
           //maxChildrenOfQuadNode:3,
           getPosition: function (item) {
-            
             if (!item) {
               return null
             }
@@ -235,31 +270,32 @@ export default {
           getHoverTitle: function (dataItem, idx) {
             var managerName = dataItem.managerName
             managerName = managerName == null ? '' : managerName
-            if(dataItem.riverType === 0) {
-              return dataItem.riverName + '<br>责任人：' + managerName + '<br>'+ '水位：1.35mm'
+            if (dataItem.riverType === 0) {
+              return dataItem.riverName + '<br>责任人：' + managerName + '<br>' + '水位：1.35mm'
             } else {
               var text = dataItem.riverName + '<br>责任人：' + managerName + '<br>断面：'
-              dataItem.sections.forEach(section => {
+              dataItem.sections.forEach((section) => {
                 text += section.sectionName + '，'
               })
-              return text;
+              return text
             }
-            
+
             //return '<div style="background: red;">123</div>'
           },
+          renderConstructor: PointSimplifier.Render.Canvas.GroupStyleRender,
           renderOptions: {
             //点的样式
             pointStyle: {
               //绘制点占据的矩形区域
-              content: PointSimplifier.Render.Canvas.getImageContent(
-                '/img/river2.png',
-                function onload() {
-                  pointSimplifierIns.renderLater()
-                },
-                function onerror(e) {
-                  alert('图片加载失败！')
-                }
-              ),
+              // content: PointSimplifier.Render.Canvas.getImageContent(
+              //   '/img/river2.png',
+              //   function onload() {
+              //     pointSimplifierIns.renderLater()
+              //   },
+              //   function onerror(e) {
+              //     alert('图片加载失败！')
+              //   }
+              // ),
               //宽度
               width: 30,
               //高度
@@ -269,8 +305,21 @@ export default {
               fillStyle: null,
               strokeStyle: null,
             },
+            getGroupId: function (item, idx) {
+              return item.riverType
+            },
+            groupStyleOptions: function (gid) {
+              return groupStyleMap[gid]
+            },
           },
         })
+        function onIconLoad() {
+          pointSimplifierIns.renderLater()
+        }
+
+        function onIconError(e) {
+          alert('图片加载失败！')
+        }
 
         window.pointSimplifierIns = pointSimplifierIns
 
@@ -284,7 +333,6 @@ export default {
           that.visible = true
           that.waterList2(record)
           that.waterList()
-          
 
           //console.log(e.type, record)
         })
@@ -298,39 +346,37 @@ export default {
     waterList2(record) {
       var param = {
         riverId: record.data.id,
-        year: new Date().getFullYear()
+        year: new Date().getFullYear(),
       }
-      waterList2( qs.stringify(param) ).then(res => {
-        this.waterListData2 = res.result.data
-        this.initEcharts(record)
-      }).catch(err => {
-
-      })
+      waterList2(qs.stringify(param))
+        .then((res) => {
+          this.waterListData2 = res.result.data
+          this.initEcharts(record)
+        })
+        .catch((err) => {})
     },
     waterList() {
       var param = {
         month: this.month,
         riverId: this.record.data.id,
-        year: new Date().getFullYear()
+        year: new Date().getFullYear(),
       }
-      waterList( qs.stringify(param) ).then(res => {
-        this.waterListData = res.result.data
-      }).catch(err => {
-
-      })
+      waterList(qs.stringify(param))
+        .then((res) => {
+          this.waterListData = res.result.data
+        })
+        .catch((err) => {})
     },
     initEcharts(record) {
-
-      
       var that = this
       var river = record.data
       this.$nextTick(() => {
         var legends = []
         var series = []
-        var color = ['#80e673','#ccb33c', '#ec6c6c','#44a4dc','#6244dc']
-        that.waterListData2.forEach((section,index) => {
+        var color = ['#80e673', '#ccb33c', '#ec6c6c', '#44a4dc', '#6244dc']
+        that.waterListData2.forEach((section, index) => {
           legends.push(section.sectionName)
-          
+
           series.push({
             name: section.sectionName,
             color: color[index],
@@ -338,7 +384,7 @@ export default {
             type: 'line',
             //smooth: true,
           })
-        });
+        })
         var dom = document.getElementById('container2')
         var myChart = echarts.init(dom)
         var app = {}
@@ -348,7 +394,7 @@ export default {
           },
           tooltip: {
             trigger: 'item',
-            formatter: "{a} <br/>{b}水质: {c}"
+            formatter: '{a} <br/>{b}水质: {c}',
           },
           legend: {
             data: legends,
@@ -356,12 +402,12 @@ export default {
           xAxis: {
             type: 'category',
             boundaryGap: false,
-            data: ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'],
+            data: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'],
           },
           yAxis: {
             type: 'category',
             boundaryGap: false,
-            data: ['V','IV','III','II','I'],
+            data: ['劣Ⅴ', 'Ⅴ', 'Ⅳ', 'Ⅲ', 'Ⅱ', 'Ⅰ'],
             // axisLabel: {
             //   formatter: '{value} °C'
             // }
@@ -391,11 +437,12 @@ table td {
 table tr {
   height: 28px;
 }
-.tbl {
+table {
   border-bottom: 1px solid gray;
   border-right: 1px solid gray;
 }
-.tbl th ,.tbl td {
+table th,
+table td {
   font-size: 12px;
   text-align: center;
   border-top: 1px solid gray;
@@ -408,12 +455,11 @@ table tr {
   margin: 0px;
 
   // border: 1px solid #d3d3d3;
-  
 }
 #right-container {
   padding: 16px;
   float: left;
-  width: 200px;
+  width: 225px;
   /* height: calc(100vh - 100px); */
   margin: 0px;
 }

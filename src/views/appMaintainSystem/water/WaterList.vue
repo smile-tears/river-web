@@ -43,13 +43,6 @@
       <span slot="serial" slot-scope="text, record, index">
         {{ index + 1 }}
       </span>
-      <span slot="type" slot-scope="text, record">
-        <span v-if="record.type == '0'">I</span>
-        <span v-if="record.type == '1'">II</span>
-        <span v-if="record.type == '2'">III</span>
-        <span v-if="record.type == '3'">IV</span>
-        <span v-if="record.type == '4'">V</span>
-      </span>
       <template slot="action" slot-scope="text, record">
         <a @click="info(record)">查看</a>
         <a-divider type="vertical" />
@@ -113,9 +106,8 @@ const columns = [
   },
   {
     title: '水质类别',
-    dataIndex: 'type',
-    key: 'type',
-    scopedSlots: { customRender: 'type' },
+    dataIndex: 'typeName',
+    key: 'typeName'
   },
   {
     title: '主要污染因子',

@@ -44,12 +44,12 @@
         <td colspan="4">监测结果(单位：mg/L)</td>
 
         <td rowspan="2">{{year}}年{{month}}月水质类别</td>
-        <td rowspan="2">2019年12月水质类别</td>
+        <td rowspan="2">{{month === 1  ? (year - 1) : year}}年{{month === 1 ? 12 : (month-1) }}月水质类别</td>
         <td rowspan="2">水质变化（环比）</td>
-        <td rowspan="2">2020年01月水质类别</td>
-        <td rowspan="2">2019年同期均值水质类别</td>
+        <td rowspan="2">{{year}}年01月水质类别</td>
+        <td rowspan="2">{{year-1}}年同期均值水质类别</td>
         <td rowspan="2">水质变化同比</td>
-        <td rowspan="2">2020年01月主要污染因子（黑体为污染严重因子）</td>
+        <td rowspan="2">{{year}}年{{month}}月主要污染因子（黑体为污染严重因子）</td>
       </tr>
       <tr class="header">
         <td>溶解氧</td>
@@ -70,12 +70,12 @@
           <td>{{ water.zl }}</td>
           <td>{{ water.gmsj }}</td>
           <td>{{ water.typeName }}</td>
-          <td>III</td>
-          <td>恶化</td>
-          <td>V</td>
-          <td>劣V</td>
-          <td>好转</td>
-          <td>无</td>
+          <td>{{ water.lstMthTName }}</td>
+          <td>{{ water.hb }}</td>
+          <td>{{ water.curYear1MthTName }}</td>
+          <td>{{ water.lstYearMthTName }}</td>
+          <td>{{ water.tb }}</td>
+          <td>{{ water.wryz }}</td>
         </tr>
       </template>
       <tr>
@@ -83,7 +83,7 @@
           《地表水环境质量标准》<br />
           （GB3838-2002）水质标准
         </td>
-        <td>III类</td>
+        <td>Ⅲ类</td>
         <td></td>
         <td>≥5</td>
         <td>≤1.0</td>
@@ -98,7 +98,7 @@
         <td></td>
       </tr>
       <tr>
-        <td>IV类</td>
+        <td>Ⅳ类</td>
         <td></td>
         <td>≥3</td>
         <td>≤1.5</td>
@@ -113,7 +113,7 @@
         <td></td>
       </tr>
       <tr>
-        <td>V类</td>
+        <td>Ⅴ类</td>
         <td></td>
         <td>≥2</td>
         <td>≤2.0</td>
@@ -132,6 +132,7 @@
 </template>
 
 <script>
+var base_api =  process.env.NODE_ENV === 'production' ? '' : '/api'
 import { waterReport } from '@/api/water'
 import qs from 'qs'
 export default {
@@ -166,7 +167,7 @@ export default {
         .catch((err) => {})
     },
     download() {
-      window.open('/water/download?year=' + this.year + '&month=' + this.month)
+      window.open(base_api + '/water/download?year=' + this.year + '&month=' + this.month)
     }
   },
 }
