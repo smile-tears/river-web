@@ -102,6 +102,8 @@ export default {
     getCurrentSw() {
       var that = this
       function getData() {
+        that.swList = []
+        that.swJo = {}
         getCurrentSw().then(res => {
           var temp = ""; //闸站
           var jo = {};
