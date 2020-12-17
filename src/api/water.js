@@ -7,9 +7,18 @@ const api = {
   waterDelete: '/water/delete',
   waterPut: '/water/put',
   waterReport: '/water/report',
+  getCurrentSw: '/currentSw',
 }
 
 export default api
+
+export function getCurrentSw(parameter) {
+  return axios({
+    url: api.getCurrentSw,
+    method: 'post',
+    data: parameter
+  })
+}
 
 export function waterList(parameter) {
   return axios({

@@ -4,127 +4,21 @@
       <div id="container"></div>
       <div id="right-container">
         <table>
+          <colgroup>
+            <col width="40%"/>
+            <col width="40%"/>
+            <col width="20%"/>
+          </colgroup>
           <tr>
             <td colspan="3" style="text-align: center; font-size: 16px">水位</td>
           </tr>
-          <tr>
-            <td rowspan="2" style="width: 40%">三闸站</td>
-            <td style="width: 40%">外河水位：</td>
-            <td style="width: 20%">3.79m</td>
-          </tr>
-          <tr>
-            <td>内河水位：</td>
-            <td>2.28m</td>
-          </tr>
-
-          <tr>
-            <td rowspan="2">菖蒲泾站</td>
-            <td>外河水位：</td>
-            <td>4.39m</td>
-          </tr>
-          <tr>
-            <td>内河水位：</td>
-            <td>1.70m</td>
-          </tr>
-
-          <tr>
-            <td>西旺泾站</td>
-            <td>内河水位：</td>
-            <td>1.00m</td>
-          </tr>
-
-          <tr>
-            <td>界泾河站</td>
-            <td>内河水位：</td>
-            <td>0.43m</td>
-          </tr>
-
-          <tr>
-            <td>章基站</td>
-            <td>内河水位：</td>
-            <td>1.76m</td>
-          </tr>
-          <tr>
-            <td>热电厂站</td>
-            <td>内河水位：</td>
-            <td>2.08m</td>
-          </tr>
-
-          <tr>
-            <td>太平港南闸</td>
-            <td>内河水位：</td>
-            <td>3.56m</td>
-          </tr>
-
-          <tr>
-            <td>唐巷站</td>
-            <td>内河水位：</td>
-            <td>3.62m</td>
-          </tr>
-
-          <tr>
-            <td>蒋巷站</td>
-            <td>内河水位：</td>
-            <td>3.57m</td>
-          </tr>
-
-          <tr>
-            <td>东庄站</td>
-            <td>内河水位：</td>
-            <td>3.58m</td>
-          </tr>
-
-          <tr>
-            <td>姑里船厂站</td>
-            <td>内河水位：</td>
-            <td>3.78m</td>
-          </tr>
-
-          <tr>
-            <td>隔水站</td>
-            <td>内河水位：</td>
-            <td>3.01m</td>
-          </tr>
-
-          <tr>
-            <td rowspan="2">新开河站</td>
-            <td>外河水位：</td>
-            <td>0.00m</td>
-          </tr>
-          <tr>
-            <td>内河水位</td>
-            <td>0.00m</td>
-          </tr>
-
-          <tr>
-            <td>西漳北闸</td>
-            <td>内河水位：</td>
-            <td>0.00m</td>
-          </tr>
-
-          <tr>
-            <td>西漳南闸</td>
-            <td>内河水位：</td>
-            <td>0.00m</td>
-          </tr>
-
-          <tr>
-            <td>黄金岸站</td>
-            <td>内河水位：</td>
-            <td>0.00m</td>
-          </tr>
-
-          <tr>
-            <td>西站</td>
-            <td>内河水位：</td>
-            <td>0.00m</td>
-          </tr>
-
-          <tr>
-            <td>塘头站</td>
-            <td>内河水位：</td>
-            <td>3.76m</td>
-          </tr>
+          <template v-for="(item,index) of swList" >
+            <tr v-for="(item2,index2) of item.children" :key="index+'-'+index2" style="height: 40px;">
+              <td v-if="index2 == 0" :rowspan="item.children.length">{{item.prefix}}</td>
+              <td>{{item2.suffix}}</td>
+              <td>{{item2.sw}}m</td>
+            </tr>
+          </template>
         </table>
       </div>
       <a-modal title="河流信息" :width="800" :visible="visible" :maskClosable="false" @cancel="handleCancel">
@@ -185,7 +79,7 @@
 <script>
 import echarts from 'echarts'
 import { riverList } from '@/api/river'
-import { waterList2, waterList } from '@/api/water'
+import { waterList2, waterList, getCurrentSw } from '@/api/water'
 import qs from 'qs'
 export default {
   data() {
@@ -195,12 +89,46 @@ export default {
       waterListData2: [],
       month: '0',
       record: {},
+      swList: [],
+      swJo: {}
     }
   },
   mounted() {
-    this.initMap()
+    this.initMap(),
+    this.getCurrentSw()
+    
   },
   methods: {
+    getCurrentSw() {
+      var that = this
+      function getData() {
+        getCurrentSw().then(res => {
+          var temp = ""; //闸站
+          var jo = {};
+          res.result.forEach(sw => {
+            var item = sw.item
+            var prefix = item.substring(0,3);
+            var suffix = item.substring(3);
+            if (prefix !== temp) {
+              if (temp !== '') that.swList.push(jo)
+              temp = prefix
+              jo = {}
+              jo.prefix = prefix
+              jo.children = []
+            }
+            jo.children.push({
+              suffix: suffix,
+              sw: sw.sw
+            })
+            that.swJo[prefix] = sw.sw
+            
+          })
+        }).catch((err) => {})
+      }
+      getData()
+      window.setInterval(getData,1000*60)
+      
+    },
     riverList() {
       riverList()
         .then((res) => {
@@ -271,7 +199,11 @@ export default {
             var managerName = dataItem.managerName
             managerName = managerName == null ? '' : managerName
             if (dataItem.riverType === 0) {
-              return dataItem.riverName + '<br>责任人：' + managerName + '<br>' + '水位：1.35mm'
+              var sw = that.swJo[dataItem.riverName.substring(0,3)]
+              if (sw === null || sw === undefined ) {
+                sw = 0
+              }
+              return dataItem.riverName + '<br>责任人：' + managerName + '<br>' + '水位：'+sw + 'm'
             } else {
               var text = dataItem.riverName + '<br>责任人：' + managerName + '<br>断面：'
               dataItem.sections.forEach((section) => {
