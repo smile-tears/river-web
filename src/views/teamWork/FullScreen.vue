@@ -42,6 +42,16 @@
                 <a-select
                   size="small"
                   style="width: 86px; margin: 0 3px; font-size: 12px"
+                  v-model="year"
+                  @change="() => {this.waterList2(this.record);this.waterList()}"
+                >
+                  <a-select-option key="0">请选择</a-select-option>
+                  <a-select-option v-for="i in years" :key="i">{{ i }}</a-select-option>
+                </a-select>
+                年
+                <a-select
+                  size="small"
+                  style="width: 86px; margin: 0 3px; font-size: 12px"
                   v-model="month"
                   @change="() => this.waterList()"
                 >
@@ -81,6 +91,11 @@ import echarts from 'echarts'
 import { riverList } from '@/api/river'
 import { waterList2, waterList, getCurrentSw } from '@/api/water'
 import qs from 'qs'
+let years = []
+var currentYear = new Date().getFullYear()
+for (var i=currentYear;i>=2020;i--) {
+  years.push(i)
+}
 export default {
   data() {
     return {
@@ -88,6 +103,8 @@ export default {
       waterListData: [],
       waterListData2: [],
       month: '0',
+      year: currentYear,
+      years: years,
       record: {},
       swList: [],
       swJo: {}
@@ -280,7 +297,7 @@ export default {
     waterList2(record) {
       var param = {
         riverId: record.data.id,
-        year: new Date().getFullYear(),
+        year: this.year,
       }
       waterList2(qs.stringify(param))
         .then((res) => {
@@ -293,7 +310,7 @@ export default {
       var param = {
         month: this.month,
         riverId: this.record.data.id,
-        year: new Date().getFullYear(),
+        year: this.year,
       }
       waterList(qs.stringify(param))
         .then((res) => {
